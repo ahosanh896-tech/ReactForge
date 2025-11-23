@@ -1,6 +1,16 @@
+import axios from "axios";
+import { useNavigate } from "react-router";
 import { formatMoney } from "../../utils/money";
 
-export function PaymentSummary(paymentSummary) {
+export function PaymentSummary({ paymentSummary, loadCart }) {
+  const navigate = useNavigate();
+
+  const createOrder = async () => {
+    await axios.post("/api/orders");
+    await loadCart();
+    navigate("/orders");
+  };
+
   return (
     <div className="payment-summary">
       <div className="payment-summary-title">Payment Summary</div>
@@ -8,7 +18,7 @@ export function PaymentSummary(paymentSummary) {
       {paymentSummary && (
         <>
           <div className="payment-summary-row">
-            <div>Items ({paymentSummary.totaItems}):</div>
+            <div>Items ({paymentSummary.totalItems}):</div>
             <div className="payment-summary-money">
               {formatMoney(paymentSummary.productCostCents)}
             </div>
@@ -38,11 +48,14 @@ export function PaymentSummary(paymentSummary) {
           <div className="payment-summary-row total-row">
             <div>Order total:</div>
             <div className="payment-summary-money">
-              {formatMoney(paymentSummary.totalCostBeforeTaxCents)}
+              {formatMoney(paymentSummary.totalCostCents)}
             </div>
           </div>
 
-          <button className="place-order-button button-primary">
+          <button
+            className="place-order-button button-primary"
+            onClick={createOrder}
+          >
             Place your order
           </button>
         </>
